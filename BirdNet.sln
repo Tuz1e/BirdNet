@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BirdNet", "BirdNet\BirdNet.csproj", "{E6C48C3E-0448-4E4C-963E-1F84208A3D76}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E6C48C3E-0448-4E4C-963E-1F84208A3D76}.Debug|x86.ActiveCfg = Debug|x86
+		{E6C48C3E-0448-4E4C-963E-1F84208A3D76}.Debug|x86.Build.0 = Debug|x86
+		{E6C48C3E-0448-4E4C-963E-1F84208A3D76}.Release|x86.ActiveCfg = Release|x86
+		{E6C48C3E-0448-4E4C-963E-1F84208A3D76}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ADF010EA-1B7D-4233-A092-3DB3A48EE852}
+	EndGlobalSection
+EndGlobal
