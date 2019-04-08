@@ -41,9 +41,15 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Bird.cs" />
+    <Compile Include="Evolution.cs" />
+    <Compile Include="Ext.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameInfo.cs" />
+    <Compile Include="Pipe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sprite.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
