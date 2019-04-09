@@ -37,9 +37,11 @@ namespace BirdNet
         List<Pipe> pipes;
 
         static int pipeTimer;
-        int aliveTimer, score, highScore;
+        int highScore;
         private SpriteFont font;
         private Sprite birdSprite;
+
+        private int[] layers;
 
         private Vector2 defaultBirdPosition, defaultBirdMovement;
 
@@ -63,6 +65,9 @@ namespace BirdNet
 
             this.population = GameInfo.Population;
             this.defaultBirdPosition = new Vector2(560, 300);
+            this.defaultBirdMovement = Vector2.Zero;
+
+            this.layers = new int[] {GameInfo.InputNodes, GameInfo.HiddenNodes, GameInfo.OutputNodes };
 
             birds = new List<Bird>();
 
@@ -83,7 +88,7 @@ namespace BirdNet
 
             InitGen(GameInfo.InputNodes, GameInfo.HiddenNodes, GameInfo.OutputNodes);
 
-            evo = new Evolution(this.birdSprite, this.defaultBirdPosition, this.defaultBirdMovement, this.population, GameInfo.MutationRate, GameInfo.CrossoverRate);
+            evo = new Evolution(this.layers, this.birdSprite, this.defaultBirdPosition, this.defaultBirdMovement, this.population, GameInfo.MutationRate, GameInfo.CrossoverRate);
 
             Reset();
         }
@@ -92,40 +97,44 @@ namespace BirdNet
         }
         protected override void Update(GameTime gameTime)
         {
-            foreach (Bird b in birds)
+            if (GetDeadBirds() < birds.Count)
             {
-                b.Update(GraphicsDevice, pipes);
+                for (int i = 0; i < birds.Count; i++)
+                {
+                    birds[i].Update(GraphicsDevice, pipes);
 
-                if (
-                    b.Position.Y >
-                    (this.GraphicsDevice.PresentationParameters.BackBufferHeight
-                    - b.Sprite.Texture.Height - 10))
-                {
-                    b.Position = new Vector2(
-                        b.Position.X,
-                        this.GraphicsDevice.PresentationParameters.BackBufferHeight
-                        - b.Sprite.Texture.Height - 10);
-                }
-                else if (b.Position.Y <= 0)
-                {
-                    b.Position = new Vector2(b.Position.X, 0);
+                    if (
+                        birds[i].Position.Y >
+                        (this.GraphicsDevice.PresentationParameters.BackBufferHeight
+                        - birds[i].Sprite.Texture.Height - 10))
+                    {
+                        birds[i].Position = new Vector2(
+                            birds[i].Position.X,
+                            this.GraphicsDevice.PresentationParameters.BackBufferHeight
+                            - birds[i].Sprite.Texture.Height - 10);
+                    }
+                    else if (birds[i].Position.Y <= 0)
+                    {
+                        birds[i].Position = new Vector2(birds[i].Position.X, 0);
+                    }
                 }
             }
-
-            foreach(Pipe pipe in pipes)
+            else
             {
-                pipe.Update(GraphicsDevice);
+                Reset();
+            }
 
-                foreach(Bird b in birds)
+            for (int i = 0; i < pipes.Count; i++)
+            {
+                pipes[i].Update(GraphicsDevice);
+                for (int j = 0; j < birds.Count; j++)
                 {
-
-                    if (b.Position.X > pipe.Position.X && !pipe.Passed)
+                    if (birds[j].Position.X > pipes[i].Position.X && !pipes[i].Passed)
                     {
-                        b.Score += 1;
-                        pipe.Passed = true;
+                        birds[i].ModifyScore(1);
                     }
-                    if (b.Hitbox.Intersects(pipe.Hitbox))
-                        b.AliveFlag = false;
+                    if (birds[j].Hitbox.Intersects(pipes[i].Hitbox))
+                        birds[j].AliveFlag = false;
                 }
             }
 
@@ -146,11 +155,27 @@ namespace BirdNet
                     this.pipes.RemoveAt(i);
             }
 
-            birds = evo.BreedBirds(birds, 0);
-
             base.Update(gameTime);
         }
 
+        /// <summary>
+        /// Get the amount of dead birds.
+        /// </summary>
+        /// <param name="birds"></param>
+        /// <returns></returns>
+        private int GetDeadBirds()
+        {
+            int deadBirds = 0;
+            for (int i = 0; i < birds.Count; i++)
+            {
+                if (!birds[i].AliveFlag)
+                {
+                    deadBirds += 1;
+                }
+            }
+
+            return deadBirds;
+        }
 
         protected override void Draw(GameTime gameTime)
         {
@@ -187,6 +212,8 @@ namespace BirdNet
             PipeGenerator(this.pipes, 1, GameInfo.PipeTop, GameInfo.PipeBottom);
             this.rand = new Random(Guid.NewGuid().GetHashCode());
             this.backgroundScroll = 0;
+
+            evo.BreedBirds(this.birds, this.highScore);
         }
 
         private void PipeGenerator(List<Pipe> pipeList, int chance, int minY, int maxY)

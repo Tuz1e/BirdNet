@@ -83,18 +83,26 @@ namespace BirdNet
             if (!this.AliveFlag)
                 return;
 
-            if (this.Movement.Y > GameInfo.MaxPower) { this.Movement = new Vector2(0, GameInfo.MaxPower); }
-            if (this.Movement.Y < -GameInfo.MaxPower) { this.Movement = new Vector2(0, GameInfo.MaxPower); }
 
-            this.Position += this.Movement;
-            this.Sprite.Update();
+            if (this.Movement.Y > GameInfo.MaxPower) { this.Movement = new Vector2(0, GameInfo.MaxPower); }
+            if (this.Movement.Y < -GameInfo.MaxPower) { this.Movement = new Vector2(0, -GameInfo.MaxPower); }
 
             this.Movement = new Vector2(this.Movement.X, this.Movement.Y + GameInfo.Gravity);
-            
+
             if (FeedForward(gd, pipeList))
             {
                 this.Movement = new Vector2(this.Movement.X, this.Movement.Y - GameInfo.Force);
             }
+
+            this.Position += this.Movement;
+            this.Sprite.Update();
+
+            this.AliveTime += 1;
+        }
+
+        public void ModifyScore(int score)
+        {
+            this.Score += score;
         }
 
         public bool FeedForward(GraphicsDevice gd, List<Pipe> pipeList)

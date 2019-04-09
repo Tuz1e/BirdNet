@@ -25,7 +25,7 @@ namespace BirdNet
             MutationRate = 0.15,
             CrossoverRate = 0.53;
         public static int
-            Population = 5,
+            Population = 25,
             InputNodes = 3,
             HiddenNodes = 2,
             OutputNodes = 1,

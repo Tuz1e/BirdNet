@@ -30,8 +30,9 @@ namespace BirdNet
 
 
 
-        public Evolution(Sprite birdSprite, Vector2 defaultPosition, Vector2 defaultMovement, int population, double mutationRate, double crossoverRate)
+        public Evolution(int[] layers, Sprite birdSprite, Vector2 defaultPosition, Vector2 defaultMovement, int population, double mutationRate, double crossoverRate)
         {
+            this.Layers = layers;
             this.defaultBirdSprite = birdSprite;
             this.defaultBirdPosition = defaultPosition;
             this.defaultBirdMovement = defaultMovement;
@@ -40,7 +41,7 @@ namespace BirdNet
             this.MutationRate = mutationRate;
             this.CrossoverRate = crossoverRate;
 
-            this.Generation = 0;
+            this.Generation = 1;
 
             this.elitist = new List<Bird>();
             this.oldHighScore = 0;
@@ -48,17 +49,17 @@ namespace BirdNet
             rand = new Random();
         }
 
-        public List<Bird> BreedBirds(List<Bird> birds, int highScore)
+        public void BreedBirds(List<Bird> birds, int highScore)
         {
-            foreach (Bird b in birds)
+            for (int i = 0; i < birds.Count; i++)
             {
-                if (b.Score > oldHighScore)
+                if (birds[i].Score > oldHighScore)
                 {
-                    b.Fitness = ((b.Score + b.AliveTime) * 2);
+                    birds[i].Fitness = ((birds[i].Score + birds[i].AliveTime) * 2);
                 }
                 else
                 {
-                    b.Fitness = (b.Score + b.AliveTime);
+                    birds[i].Fitness = (birds[i].Score + birds[i].AliveTime);
                 }
 
                 if (oldHighScore < highScore)
@@ -66,9 +67,6 @@ namespace BirdNet
                     oldHighScore = highScore;
                 }
             }
-
-            if (GetDeadBirds(birds) == birds.Count)
-            {
                 newBirdList = new List<Bird>();
                 birds.OrderByDescending(bird => bird.Fitness).ToList();
                 newBirdList.AddRange(birds.Take(3));
@@ -148,23 +146,11 @@ namespace BirdNet
                 newBirdList.OrderByDescending(bird => bird.Fitness).ToList();
                 birds.Clear();
                 birds.AddRange(newBirdList);
+            birds.RemoveAt(birds.Count()-1);
                 newBirdList.Clear();
-            }
-            return birds;
-        }
 
-        private int GetDeadBirds(List<Bird> birds)
-        {
-            int deadBirds = 0;
-            foreach(Bird b in birds)
-            {
-                if (!b.AliveFlag)
-                {
-                    deadBirds += 1;
-                }
-            }
-
-            return deadBirds;
+            Generation += 1;
+            Console.WriteLine("GEN " + Generation);
         }
 
         private bool Mutate(List<double> gene)
