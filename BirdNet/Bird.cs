@@ -143,7 +143,7 @@ namespace BirdNet
         public void SetDead()
         {
             AliveFlag = false;
-            Fitness = (AliveTime + Score) * 0.05f;
+            Fitness = (AliveTime + Score);
         }
 
         public void SetFitness(float aValue)

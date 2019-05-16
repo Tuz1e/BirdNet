@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace BirdNet
 {
@@ -118,7 +115,7 @@ namespace BirdNet
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GetDeadBirds() <= birds.Count)
+            if (GetDeadBirds() < birds.Count)
             {
                 for (int i = 0; i < birds.Count; i++)
                 {
@@ -140,8 +137,7 @@ namespace BirdNet
                     }
                 }
             }
-            
-            if (GetDeadBirds() >= birds.Count)
+            else
             {
                 Reset();
             }

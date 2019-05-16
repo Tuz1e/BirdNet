@@ -1,10 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BirdNet
 {
@@ -18,13 +13,13 @@ namespace BirdNet
 
         public static float
             Gravity = 0.55f,
-            Force = 17.5f,
+            Force = 14.5f,
             MaxPower = 10f,
-            PipeSpeed = 4.5f,
+            PipeSpeed = 3.5f,
             BackgroundSpeed = 2.0f;
         public static double
             MutationRate = 0.15,
-            CrossoverRate = 0.63;
+            CrossoverRate = 0.53;
         public static int
             Population = 250,
             InputNodes = 3,
@@ -32,12 +27,15 @@ namespace BirdNet
             OutputNodes = 1,
             RandomIndividuals = Population / 10,
             PipeInterval = 80,
-            PipeTop = 285,
-            PipeBottom = 285;
+            PipeTop = 295,
+            PipeBottom = 295;
+
+
         public static bool
             FastMode = true, //TrainMode = false overrides this.
             TrainMode = true,
-            SaveMode = true; //Determines if train mode will save the data.
+            SaveMode = true, //Determines if train mode will save the data.
+            IncludeSaved = false;
 
         public static string NetFilePath = Environment.CurrentDirectory; //Debug folder
         public static string NetFileType = ".txt";

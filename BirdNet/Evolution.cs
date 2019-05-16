@@ -26,11 +26,13 @@ namespace BirdNet
 
         int oldHighScore;
 
-        float maxFitness, maxScore;
+        float maxFitness, maxScore, totalFitness, oldMedian;
 
         private List<Bird> newBirdList;
 
         Bird bestBird;
+
+        bool savedAdded = false;
 
 
 
@@ -48,12 +50,14 @@ namespace BirdNet
 
             this.elitist = new List<Bird>();
             this.oldHighScore = 0;
+            this.totalFitness = 0;
 
             rand = new Random();
             
             if (File.Exists(GameInfo.NetFullPath))
             {
-                bestBird = FileManager.Read(defaultPosition, defaultMovement, birdSprite);
+                Bird _ = FileManager.Read(defaultPosition, defaultMovement, birdSprite);
+                bestBird = _;
             }
             else
             {
@@ -67,16 +71,8 @@ namespace BirdNet
 
             for (int i = 0; i < birds.Count; i++)
             {
-                if (birds[i].Score > oldHighScore)
-                {
-                    birds[i].SetFitness(birds[i].Fitness *1.5f);
-                    highScore = oldHighScore;
-                }
-                if (oldHighScore < highScore)
-                {
-                    oldHighScore = highScore;
-                }
                 tempFitness += birds[i].Fitness;
+                totalFitness += tempFitness;
             }
             Generation += 1;
 
@@ -92,14 +88,28 @@ namespace BirdNet
             maxFitness = bird.Fitness;
             maxScore = bird.Score;
 
+            float median = totalFitness / (Generation * GameInfo.Population);
+
+            float diff = median - oldMedian;
+            oldMedian = median;
+
+            //Median difference from last generation
+            float percentDiff = diff / median * 100;
+
             Console.WriteLine(
-                "GEN " + Generation + 
-                " | AVGFIT " + (tempFitness / birds.Count) + 
-                " | BESTFIT " + maxFitness +
-                " | MAXSCR " + maxScore);
+                $"GEN {Generation} | AVGFIT {tempFitness / birds.Count} " +
+                $"| BESTFIT {maxFitness} | MAXSCR {maxScore} | MEDIANFIT {median} | PERCDIFF {percentDiff}%");
 
             newBirdList = new List<Bird>();
             birds.OrderByDescending(b => b.Fitness).ToList();
+
+            if (!savedAdded && GameInfo.IncludeSaved)
+            {
+                if (bestBird.Fitness > 0)
+                {
+                    newBirdList.Add(bestBird);
+                }
+            }
 
             for (int i = 0; i < newBirdList.Count; i++)
             {
@@ -186,6 +196,7 @@ namespace BirdNet
                 birds.AddRange(newBirdList);
                 birds.RemoveAt(birds.Count()-1);
                 newBirdList.Clear();
+            birds.OrderByDescending(b => b.Fitness);
         }
 
         private bool Mutate(List<double> gene)
