@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,11 @@ namespace BirdNet
 
         int oldHighScore;
 
+        float maxFitness, maxScore;
+
         private List<Bird> newBirdList;
+
+        Bird bestBird;
 
 
 
@@ -41,59 +46,93 @@ namespace BirdNet
             this.MutationRate = mutationRate;
             this.CrossoverRate = crossoverRate;
 
-            this.Generation = 1;
-
             this.elitist = new List<Bird>();
             this.oldHighScore = 0;
 
             rand = new Random();
+            
+            if (File.Exists(GameInfo.NetFullPath))
+            {
+                bestBird = FileManager.Read(defaultPosition, defaultMovement, birdSprite);
+            }
+            else
+            {
+                bestBird = new Bird();
+            }
         }
 
-        public void BreedBirds(List<Bird> birds, int highScore)
+        public void BreedBirds(List<Bird> birds, int highScore, Sprite birdSprite)
         {
+            float tempFitness = 0;
+
             for (int i = 0; i < birds.Count; i++)
             {
                 if (birds[i].Score > oldHighScore)
                 {
-                    birds[i].Fitness = ((birds[i].Score + birds[i].AliveTime) * 2);
+                    birds[i].SetFitness(birds[i].Fitness *1.5f);
+                    highScore = oldHighScore;
                 }
-                else
-                {
-                    birds[i].Fitness = (birds[i].Score + birds[i].AliveTime);
-                }
-
                 if (oldHighScore < highScore)
                 {
                     oldHighScore = highScore;
                 }
+                tempFitness += birds[i].Fitness;
             }
-                newBirdList = new List<Bird>();
-                birds.OrderByDescending(bird => bird.Fitness).ToList();
-                newBirdList.AddRange(birds.Take(3));
+            Generation += 1;
 
-                for (int i = 0; i < newBirdList.Count; i++)
+            Bird bird = birds.OrderByDescending(b => b.Fitness).First();
+
+            //If theres no training data saved, Save
+            if (GameInfo.SaveMode && bird.Fitness > bestBird.Fitness)
+            {
+                FileManager.Write(bird, Layers, Generation);
+                bestBird = new Bird(bird);
+            }
+
+            maxFitness = bird.Fitness;
+            maxScore = bird.Score;
+
+            Console.WriteLine(
+                "GEN " + Generation + 
+                " | AVGFIT " + (tempFitness / birds.Count) + 
+                " | BESTFIT " + maxFitness +
+                " | MAXSCR " + maxScore);
+
+            newBirdList = new List<Bird>();
+            birds.OrderByDescending(b => b.Fitness).ToList();
+
+            for (int i = 0; i < newBirdList.Count; i++)
+            {
+                if (elitist.Count > 2)
                 {
-                    if (elitist.Count > 2)
+                    for (int j = 0; j < elitist.Count; j++)
                     {
-                        for (int j = 0; j < elitist.Count; j++)
+                        if (newBirdList[i].Fitness > elitist[j].Fitness)
                         {
-                            if (newBirdList[i].Fitness > elitist[j].Fitness)
-                            {
                                 elitist.Add(newBirdList[i]);
-                                elitist.OrderBy(bird => bird.Fitness);
+                                elitist.OrderBy(b => b.Fitness);
                                 elitist.RemoveAt(0);
-                            }
                         }
+                        elitist[j].SetAlive(defaultBirdPosition);
                     }
-                    else
-                        elitist.Add(newBirdList[i]);
                 }
-                elitist.OrderByDescending(bird => bird.Fitness);
+                else { elitist.Add(newBirdList[i]); }
+            }
+
+                elitist.OrderByDescending(b => b.Fitness);
 
                 for (int i = 0; i < GameInfo.RandomIndividuals; i++)
                 {
-                    newBirdList.Add(new Bird(this.Layers, this.defaultBirdPosition, this.defaultBirdMovement, this.defaultBirdSprite));
-                }
+                birds.Add(
+                    new Bird(
+                        new int[] { Layers[0], Layers[1], Layers[2] },
+                        Network.Create(Layers[0], Layers[1], rand),
+                        Network.Create(Layers[1], Layers[2], rand),
+                        0,
+                        this.defaultBirdPosition,
+                        this.defaultBirdMovement,
+                        birdSprite));
+            }
 
                 if (elitist.Count > 3)
                 {
@@ -106,7 +145,6 @@ namespace BirdNet
                     elitist.Clear();
                     elitist.AddRange(b);
                 }
-
                 newBirdList.AddRange(elitist);
 
                 while(newBirdList.Count < Population)
@@ -143,14 +181,11 @@ namespace BirdNet
                     }
                 }
 
-                newBirdList.OrderByDescending(bird => bird.Fitness).ToList();
+                newBirdList.OrderBy(b => b.Fitness).ToList();
                 birds.Clear();
                 birds.AddRange(newBirdList);
-            birds.RemoveAt(birds.Count()-1);
+                birds.RemoveAt(birds.Count()-1);
                 newBirdList.Clear();
-
-            Generation += 1;
-            Console.WriteLine("GEN " + Generation);
         }
 
         private bool Mutate(List<double> gene)

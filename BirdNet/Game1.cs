@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace BirdNet
 {
@@ -45,8 +47,6 @@ namespace BirdNet
 
         private Vector2 defaultBirdPosition, defaultBirdMovement;
 
-        bool playing;
-
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -54,8 +54,6 @@ namespace BirdNet
         }
         protected override void Initialize()
         {
-            this.playing = true;
-
             this.rand = new Random(Guid.NewGuid().GetHashCode());
 
 
@@ -63,7 +61,9 @@ namespace BirdNet
             graphics.PreferredBackBufferWidth = GameInfo.WindowWidth;
             graphics.ApplyChanges();
 
-            this.population = GameInfo.Population;
+
+
+            this.population = (GameInfo.TrainMode) ? GameInfo.Population : 1;
             this.defaultBirdPosition = new Vector2(560, 300);
             this.defaultBirdMovement = Vector2.Zero;
 
@@ -72,6 +72,14 @@ namespace BirdNet
             birds = new List<Bird>();
 
             base.Initialize();
+
+            if (GameInfo.FastMode && GameInfo.TrainMode == true)
+            {
+                while (true)
+                {
+                    Update(null);
+                }
+            }
         }
         protected override void LoadContent()
         {
@@ -86,18 +94,31 @@ namespace BirdNet
 
             //this.font = Content.Load<SpriteFont>("font");
 
-            InitGen(GameInfo.InputNodes, GameInfo.HiddenNodes, GameInfo.OutputNodes);
+            if (GameInfo.TrainMode)
+            {
+                birds = Network.CreateNet(GameInfo.InputNodes, GameInfo.HiddenNodes, GameInfo.OutputNodes,
+                    GameInfo.Population, this.defaultBirdPosition, this.defaultBirdMovement, this.birdSprite, this.rand);
 
-            evo = new Evolution(this.layers, this.birdSprite, this.defaultBirdPosition, this.defaultBirdMovement, this.population, GameInfo.MutationRate, GameInfo.CrossoverRate);
+                evo = new Evolution(this.layers, this.birdSprite, this.defaultBirdPosition, this.defaultBirdMovement, this.population, GameInfo.MutationRate, GameInfo.CrossoverRate);
+            }
+            else
+            {
+                birds.Add(FileManager.Read(this.defaultBirdPosition, this.defaultBirdMovement, this.birdSprite));
+            }
 
             Reset();
         }
+
+
+
+
+
         protected override void UnloadContent()
         {
         }
         protected override void Update(GameTime gameTime)
         {
-            if (GetDeadBirds() < birds.Count)
+            if (GetDeadBirds() <= birds.Count)
             {
                 for (int i = 0; i < birds.Count; i++)
                 {
@@ -119,11 +140,13 @@ namespace BirdNet
                     }
                 }
             }
-            else
+            
+            if (GetDeadBirds() >= birds.Count)
             {
                 Reset();
             }
 
+            bool pipePassed = false;
             for (int i = 0; i < pipes.Count; i++)
             {
                 pipes[i].Update(GraphicsDevice);
@@ -131,10 +154,19 @@ namespace BirdNet
                 {
                     if (birds[j].Position.X > pipes[i].Position.X && !pipes[i].Passed)
                     {
-                        birds[i].ModifyScore(1);
+                        birds[j].ModifyScore(1);
+                        pipePassed = true;
                     }
+
                     if (birds[j].Hitbox.Intersects(pipes[i].Hitbox))
-                        birds[j].AliveFlag = false;
+                    {
+                        birds[j].SetDead();
+                    }
+                }
+
+                if (pipePassed)
+                {
+                    pipes[i].SetPassed(true);
                 }
             }
 
@@ -147,7 +179,9 @@ namespace BirdNet
                 PipeGenerator(this.pipes, 1, GameInfo.PipeTop, GameInfo.PipeBottom);
             }
             else
+            {
                 pipeTimer -= 1;
+            }
 
             for (int i = 0; i < this.pipes.Count; i++)
             {
@@ -213,7 +247,15 @@ namespace BirdNet
             this.rand = new Random(Guid.NewGuid().GetHashCode());
             this.backgroundScroll = 0;
 
-            evo.BreedBirds(this.birds, this.highScore);
+            if (GameInfo.TrainMode)
+            {
+                evo.BreedBirds(this.birds, this.highScore, this.birdSprite);
+            }
+            else if (!GameInfo.TrainMode)
+            {
+                Console.WriteLine(birds[0].Score);
+                birds[0].SetAlive(defaultBirdPosition);
+            }
         }
 
         private void PipeGenerator(List<Pipe> pipeList, int chance, int minY, int maxY)
@@ -232,47 +274,8 @@ namespace BirdNet
                 Content.Load<Texture2D>("pipe")));
 
             pipeTimer = GameInfo.PipeInterval;
-        }
 
-        /// <summary>
-        /// Gets a randomized weight.
-        /// </summary>
-        /// <param name="anInputAmnt">Amount of nodes in the first layer.</param>
-        /// <param name="aHiddenAmnt">Amount of nodes in the second layer.</param>
-        /// <returns>A new randomized weight</returns>
-        private double[,] Create(int num1, int num2)
-        {
-            double[,] weight = new double[num1, num2];
-            for (int i = 0; i < num1; i++)
-            {
-                for (int j = 0; j < num2; j++)
-                {
-                    weight[i, j] = rand.NextDouble();
-                }
-            }
-
-            return weight;
-        }
-
-        public void InitGen(int input, int hidden, int output)
-        {
-            CreateNet(input, hidden, output);
-        }
-
-        private void CreateNet(int input, int hidden, int output)
-        {
-            for (int i = 0; i < population; i++)
-            {
-                birds.Add(
-                    new Bird(
-                        new int[] { input, hidden, output }, 
-                        Create(input, hidden), 
-                        Create(hidden, output), 
-                        0, 
-                        defaultBirdPosition, 
-                        defaultBirdMovement, 
-                        birdSprite));
-            }
+            pipeTimer = GameInfo.PipeInterval;
         }
     }
 }

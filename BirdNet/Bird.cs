@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -25,8 +24,9 @@ namespace BirdNet
         public int[] Layers { get; set; }
         public int AliveTime;
         public bool AliveFlag;
-
         public int Score { get; set; }
+
+        
 
         float
             minValue = 0,
@@ -62,8 +62,11 @@ namespace BirdNet
             this.Sprite = sprite;
             this.AliveTime = 0;
             this.AliveFlag = true;
+
+            this.Score = 0;
+            this.Fitness = 0;
         }
-        public Bird(int[] layers, Vector2 pos, Vector2 movement, Sprite sprite)
+        public Bird(int[] layers, Vector2 pos, Vector2 movement, Sprite sprite, float fitness = 0)
         {
             this.Layers = layers;
             this.Fitness = 0;
@@ -74,14 +77,38 @@ namespace BirdNet
             this.Movement = movement;
             this.Sprite = sprite;
 
+            this.Score = 0;
+            this.Fitness = fitness;
+
             this.AliveTime = 0;
             this.AliveFlag = true;
+        }
+
+        public Bird(Bird bird)
+        {
+            this.Layers = bird.Layers;
+            this.Fitness = bird.Fitness;
+            this.HiddenLayerWeights = bird.HiddenLayerWeights;
+            this.OutputLayerWeights = bird.OutputLayerWeights;
+            this.Position = bird.Position;
+            this.Sprite = bird.Sprite;
+            this.Score = bird.Score;
+            this.Fitness = bird.Fitness;
+            this.AliveTime = bird.AliveTime;
+            this.AliveFlag = bird.AliveFlag;
+        }
+
+        public Bird()
+        {
+            this.Fitness = 0;
         }
 
         public void Update(GraphicsDevice gd, List<Pipe> pipeList)
         {
             if (!this.AliveFlag)
+            {
                 return;
+            }
 
 
             if (this.Movement.Y > GameInfo.MaxPower) { this.Movement = new Vector2(0, GameInfo.MaxPower); }
@@ -103,6 +130,25 @@ namespace BirdNet
         public void ModifyScore(int score)
         {
             this.Score += score;
+        }
+
+        public void SetAlive(Vector2 pos)
+        {
+            AliveFlag = true;
+            this.Position = pos;
+            this.AliveTime = 0;
+
+            this.Score = 0;
+        }
+        public void SetDead()
+        {
+            AliveFlag = false;
+            Fitness = (AliveTime + Score) * 0.05f;
+        }
+
+        public void SetFitness(float aValue)
+        {
+            Fitness = aValue;
         }
 
         public bool FeedForward(GraphicsDevice gd, List<Pipe> pipeList)

@@ -44,8 +44,10 @@
     <Compile Include="Bird.cs" />
     <Compile Include="Evolution.cs" />
     <Compile Include="Ext.cs" />
+    <Compile Include="FileManager.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameInfo.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="Pipe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
