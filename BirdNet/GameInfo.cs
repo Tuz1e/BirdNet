@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 
 namespace BirdNet
 {
@@ -37,13 +38,15 @@ namespace BirdNet
         public static bool
             FastMode = true, //TrainMode = false overrides this.
             TrainMode = true,
-            SaveMode = true, //Determines if train mode will save the data.
+            SaveMode = false, //Determines if train mode will save the data.
             IncludeSaved = false,
             CCursorState = false;
 
-        public static string NetFilePath = Environment.CurrentDirectory; //Debug folder
+        public static string NetFilePath =
+            Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName; //Debug folder
+
         public static string NetFileType = ".txt";
         public static string NetFileName = "training_data";
-        public static string NetFullPath = Path.GetFullPath(NetFilePath + "\\" + NetFileName + NetFileType);
+        public static string NetFullPath = Path.GetFullPath($"{NetFilePath}\\{NetFileName}{NetFileType}");
     }
 }

@@ -86,7 +86,7 @@ namespace BirdNet
             {
                 for (int j = 0; j < num2; j++)
                 {
-                    if (!GameInfo.SaveMode)
+                    if (!GameInfo.TrainMode)
                     {
                         Console.WriteLine(info[infoid]);
                     }

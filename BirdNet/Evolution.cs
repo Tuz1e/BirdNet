@@ -344,7 +344,7 @@ namespace BirdNet
                 avgOldFitnessIncrease = previousFitnessDifference / averageFitness * 100;
 
                 avgDifference = averageFitness - this.firstAverageFit;
-                avgFitIncrease = avgDifference / averageFitness * 100;
+                avgFitIncrease = averageFitness / this.firstAverageFit * 100;
 
                 Util.C();
 
@@ -352,18 +352,17 @@ namespace BirdNet
                 Util.DebugMsg($"Generation: ", false);
                 Util.DebugMsg($"{Generation} ", true, ConsoleColor.Cyan);
 
-                Util.DebugMsg($"Average Fitness: ", false);
-                Util.DebugMsg($"{averageFitness} ", true, ConsoleColor.Cyan);
-
-                Util.DebugMsg($"Best Fitness: ", false);
-                Util.DebugMsg($"{this.maxFitness} ", true, ConsoleColor.Cyan);
-
                 Util.DebugMsg($"Max Score: ", false);
                 Util.DebugMsg($"{this.maxScore} ", true, ConsoleColor.Cyan);
 
                 Util.NewLine();
 
                 //Average fitness change from previous generation
+
+                Util.DebugMsg($"Best Fitness: ", false);
+                Util.DebugMsg($"{this.maxFitness} ", true, ConsoleColor.Cyan);
+                Util.DebugMsg($"Average Fitness: ", false);
+                Util.DebugMsg($"{averageFitness} ", true, ConsoleColor.Cyan);
                 Util.DebugMsg($"Previous Avg Fitness: ", false);
                 Util.DebugMsg($"{this.oldAvgFitness} ", true, ConsoleColor.Cyan);
                 Util.DebugMsg($"Avg Fitness Change: ", false);
@@ -375,7 +374,7 @@ namespace BirdNet
                 //Average fitness change from generation 1.
                 Util.DebugMsg($"GEN[1] Average Fitness: ", false);
                 Util.DebugMsg($"{this.firstAverageFit} ", true, ConsoleColor.Cyan);
-                Util.DebugMsg($"Fitness Change: ", false);
+                Util.DebugMsg($"Fitness Increase/Decrease: ", false);
                 Util.DebugMsg($"{avgFitIncrease}% ", true,
                     (avgFitIncrease >= 0) ? ConsoleColor.Green : ConsoleColor.Red);
 
