@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
-
+using System;
+using System.Collections.Generic;
 
 namespace BirdNet
 {
-    class Bird
+    internal class Bird
     {
         #region Network specific
+
         public double[,] HiddenLayerWeights { get; set; }
         public double[,] OutputLayerWeights { get; set; }
         public float Fitness { get; set; } //Bird fitness
@@ -26,9 +20,7 @@ namespace BirdNet
         public bool AliveFlag;
         public int Score { get; set; }
 
-        
-
-        float
+        private float
             minValue = 0,
             minTowerY = 1,
             maxTowerY = 1,
@@ -36,7 +28,7 @@ namespace BirdNet
             minDistanceToTower = 0,
             centerPos = 0;
 
-        #endregion
+        #endregion Network specific
 
         public Vector2 Position { get; set; }
         public Vector2 Movement { get; set; }
@@ -66,6 +58,7 @@ namespace BirdNet
             this.Score = 0;
             this.Fitness = 0;
         }
+
         public Bird(int[] layers, Vector2 pos, Vector2 movement, Sprite sprite, float fitness = 0)
         {
             this.Layers = layers;
@@ -110,7 +103,6 @@ namespace BirdNet
                 return;
             }
 
-
             if (this.Movement.Y > GameInfo.MaxPower) { this.Movement = new Vector2(0, GameInfo.MaxPower); }
             if (this.Movement.Y < -GameInfo.MaxPower) { this.Movement = new Vector2(0, -GameInfo.MaxPower); }
 
@@ -140,10 +132,11 @@ namespace BirdNet
 
             this.Score = 0;
         }
+
         public void SetDead()
         {
             AliveFlag = false;
-            Fitness = (AliveTime + Score);
+            Fitness = (float)Math.Sqrt(AliveTime+Score);
         }
 
         public void SetFitness(float aValue)
@@ -179,14 +172,14 @@ namespace BirdNet
             Input = new double[1, Layers[0]];
 
             //Inputs, moved down for readability
-            Input[0, 0] = 
-                1 - minDistanceToTower 
+            Input[0, 0] =
+                1 - minDistanceToTower
                 / (gd.PresentationParameters.BackBufferWidth - this.Position.X - this.Hitbox.Width);
-            Input[0, 1] = 
-                (this.Position.Y + this.Hitbox.Height - maxTowerY) 
+            Input[0, 1] =
+                (this.Position.Y + this.Hitbox.Height - maxTowerY)
                 / gd.PresentationParameters.BackBufferHeight;
-            Input[0, 2] = 
-                (this.Position.Y - minTowerY) 
+            Input[0, 2] =
+                (this.Position.Y - minTowerY)
                 / gd.PresentationParameters.BackBufferHeight;
 
             double[,] hiddenInputs = Multiply(Input, HiddenLayerWeights);
@@ -204,7 +197,7 @@ namespace BirdNet
             this.Sprite.Draw(sb, this.Position);
         }
 
-        double[,] Multiply(double[,] arr1, double[,] arr2)
+        private double[,] Multiply(double[,] arr1, double[,] arr2)
         {
             double[,] arr = new double[arr1.GetLength(0), arr2.GetLength(1)];
 

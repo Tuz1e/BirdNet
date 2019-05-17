@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BirdNet
 {
@@ -16,6 +12,7 @@ namespace BirdNet
             //Sigmoid function on double
             return 1.0 / (1.0 + Math.Exp(-x));
         }
+
         public static double[] Sigmoid(this double[] arr)
         {
             for (int i = 0; i < arr.Length; i++)
@@ -24,6 +21,7 @@ namespace BirdNet
             }
             return arr;
         }
+
         public static double[,] Sigmoid(this double[,] arr)
         {
             for (int i = 0; i < arr.GetLength(0); i++)

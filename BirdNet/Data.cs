@@ -1,13 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BirdNet
 {
-    class Network
+    internal class Data
     {
         public static double[,] Create(int num1, int num2, Random rand)
         {
@@ -24,7 +21,7 @@ namespace BirdNet
         }
 
         public static List<Bird> CreateNet(
-            int input, int hidden, int output, int population, 
+            int input, int hidden, int output, int population,
             Vector2 defaultBirdPosition, Vector2 defaultBirdMovement, Sprite birdSprite, Random rand)
         {
             List<Bird> birds = new List<Bird>();

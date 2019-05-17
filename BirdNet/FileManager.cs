@@ -1,14 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace BirdNet
 {
-    class FileManager
+    internal class FileManager
     {
         /// <summary>
         /// Writes text into a previously created text document.
@@ -23,7 +21,7 @@ namespace BirdNet
 
         public static void Write(Bird bird, int[] layers, int generation)
         {
-            Console.WriteLine("Saving bird...");
+            Debug.WriteLine("Saving bird...");
 
             using (FileStream fileStream = File.Create(GameInfo.NetFullPath))
             {
@@ -47,7 +45,7 @@ namespace BirdNet
                     }
                 }
             }
-            Console.WriteLine($"Bird saved. - GEN: {generation} - FIT: {bird.Fitness} - SCORE: {bird.Score}");
+            Debug.WriteLine($"Bird saved. - GEN: {generation} - FIT: {bird.Fitness} - SCORE: {bird.Score}");
         }
 
         public static Bird Read(Vector2 defaultBirdPosition, Vector2 defaultBirdMovement, Sprite birdSprite)
@@ -79,6 +77,7 @@ namespace BirdNet
         }
 
         private static int infoid = 4;
+
         private static double[,] InitData(int num1, int num2, string[] info)
         {
             double[,] weight = new double[num1, num2];
