@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 namespace BirdNet
 {
-    //TODO: Sometimes Fitness is incredibly high compared to score. Probably linq screwing with me again...
-
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
@@ -92,6 +90,8 @@ namespace BirdNet
 
             birdSprite = new Sprite(birdTexture, 4, 8);
 
+            font = Content.Load<SpriteFont>("font");
+
             //this.font = Content.Load<SpriteFont>("font");
 
             if (GameInfo.TrainMode)
@@ -115,6 +115,10 @@ namespace BirdNet
 
         protected override void Update(GameTime gameTime)
         {
+            if (!GameInfo.TrainMode)
+            {
+            }
+
             int deadBirds = 0;
             for (int i = 0; i < birds.Count; i++)
             {
@@ -177,6 +181,7 @@ namespace BirdNet
                 {
                     pipes[i].SetPassed(true);
                 }
+                pipePassed = false;
             }
 
             this.backgroundScroll += GameInfo.BackgroundSpeed;
@@ -223,6 +228,12 @@ namespace BirdNet
             foreach (Bird b in birds)
             {
                 b.Draw(spriteBatch);
+            }
+
+            if (!GameInfo.TrainMode)
+            {
+                spriteBatch.DrawString(font, $"Saved Fitness: {birds[0].Fitness}", new Vector2(20, 50), Color.Red);
+                spriteBatch.DrawString(font, $"Score: {birds[0].Score/2}", new Vector2(20, 110), Color.Red);
             }
 
             spriteBatch.End();

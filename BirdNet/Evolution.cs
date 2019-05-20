@@ -27,9 +27,7 @@ namespace BirdNet
 
         private List<Bird> newBirdList;
 
-        private Bird bestBird;
-
-        private bool savedAdded = false;
+        public Bird SavedBird { get; set; }
 
         public Evolution(int[] layersParam, Sprite birdSpriteParam,
             Vector2 defaultPosParam, Vector2 defaultMovementParam,
@@ -53,11 +51,11 @@ namespace BirdNet
             if (File.Exists(GameInfo.NetFullPath))
             {
                 Bird _ = FileManager.Read(defaultPosParam, defaultMovementParam, birdSpriteParam);
-                bestBird = _;
+                SavedBird = _;
             }
             else
             {
-                bestBird = new Bird();
+                SavedBird = new Bird();
             }
         }
 
@@ -76,10 +74,10 @@ namespace BirdNet
             Bird bird = birdsToReturn.OrderByDescending(b => b.Fitness).First();
 
             //If theres no training data saved or bird has higher fitness than saved bird, Save
-            if (GameInfo.SaveMode && bird.Fitness > bestBird.Fitness)
+            if (GameInfo.SaveMode && bird.Fitness > SavedBird.Fitness)
             {
                 FileManager.Write(bird, Layers, Generation);
-                this.bestBird = new Bird(bird);
+                this.SavedBird = new Bird(bird);
             }
 
             //Bird with highest fitness, should theoretically have the highest score.

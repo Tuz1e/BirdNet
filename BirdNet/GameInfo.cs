@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
+﻿using System.IO;
 
 namespace BirdNet
 {
@@ -37,16 +35,16 @@ namespace BirdNet
 
         public static bool
             FastMode = true, //TrainMode = false overrides this.
-            TrainMode = true,
-            SaveMode = false, //Determines if train mode will save the data.
+            TrainMode = false,
+            SaveMode = true, //Determines if train mode will save the data.
             IncludeSaved = false,
             CCursorState = false;
 
         public static string NetFilePath =
-            Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName; //Debug folder
+            Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
         public static string NetFileType = ".txt";
-        public static string NetFileName = "training_data";
+        public static string NetFileName = "training_data_working"; //Change to training_data when training as to not override an already trained file training_data_working
         public static string NetFullPath = Path.GetFullPath($"{NetFilePath}\\{NetFileName}{NetFileType}");
     }
 }
