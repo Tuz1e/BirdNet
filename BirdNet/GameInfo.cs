@@ -36,7 +36,7 @@ namespace BirdNet
         public static bool
             FastMode = true, //TrainMode = false overrides this.
             TrainMode = false,
-            SaveMode = true, //Determines if train mode will save the data.
+            SaveMode = false, //Determines if train mode will save the data.
             IncludeSaved = false,
             CCursorState = false;
 
@@ -44,7 +44,7 @@ namespace BirdNet
             Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
 
         public static string NetFileType = ".txt";
-        public static string NetFileName = "training_data_working"; //Change to training_data when training as to not override an already trained file training_data_working
+        public static string NetFileName = "training_data"; //Change to training_data when training as to not override an already trained file training_data_working
         public static string NetFullPath = Path.GetFullPath($"{NetFilePath}\\{NetFileName}{NetFileType}");
     }
 }
