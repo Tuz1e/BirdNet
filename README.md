@@ -15,7 +15,7 @@ An AI learning to play Flappy Bird.
 ## Cloning
 If you are too clone this project, here is the simple commands.
 ```
-git clone https://github.com/TxJson/BirdNet [Location]
+git clone https://github.com/TxJson/bird-network [Location]
 ```
 
 ## Dependencies:
